@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#0b0507">
+<title>Dosti Buddy - Private Theatre</title>
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<style>
+:root{--gold:#f5c451;--red:#8e0f1f;--bg:#0b0507;--card:#1a0e12;--line:#3b2229}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:#fff4e0;font-family:Georgia,'Times New Roman',serif;overscroll-behavior:none}
+button,input{font:inherit}
+button{border:0;border-radius:12px;padding:10px 14px;background:#2a1a1f;color:#fff4e0;font-family:system-ui,sans-serif}
+button.pri{background:linear-gradient(180deg,#f7d06b,#d99a1c);color:#2b1500;font-weight:700}
+input{border:1px solid var(--line);border-radius:12px;padding:12px;background:#140a0e;color:#fff4e0;width:100%;font-family:system-ui,sans-serif}
+.marq{display:flex;gap:6px;justify-content:center;padding:4px 0}
+.marq i{width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold);animation:bl 1.2s infinite}
+.marq i:nth-child(even){animation-delay:.6s}
+@keyframes bl{50%{opacity:.25}}
+#lobby{display:flex;flex-direction:column;gap:12px;padding:20px;max-width:420px;margin:0 auto;min-height:100%;justify-content:center;background:radial-gradient(ellipse at 50% 0,#3a0d16 0,transparent 60%)}
+#lobby h1{margin:0;font-size:32px;text-align:center;color:var(--gold);text-shadow:0 0 18px #f5c45166;letter-spacing:1px}
+#lobby .sub{margin:0;text-align:center;color:#c9aa8a;font-size:14px}
+.ticket{background:linear-gradient(180deg,#2a1218,#1a0b0f);border:2px dashed var(--gold);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.row{display:flex;gap:8px}
+#lerr{color:#ff8a80;text-align:center;margin:0;font-size:13px;font-family:system-ui}
+#app{display:none;height:100dvh;flex-direction:column}
+#top{display:flex;align-items:center;gap:8px;padding:6px 10px;background:#12070a;border-bottom:1px solid var(--line);font-size:13px;font-family:system-ui}
+#top .code{font-weight:700;letter-spacing:2px;background:#2a1a1f;padding:4px 8px;border-radius:8px;color:var(--gold)}
+#status{flex:1;color:#9fe8b0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#show{display:none;padding:5px 10px;background:linear-gradient(90deg,#5a0f1c,#8e0f1f);color:var(--gold);font-size:13px;text-align:center;font-family:system-ui;letter-spacing:.3px}
+#stage{position:relative;background:#000;flex:0 0 auto;width:100%;aspect-ratio:16/9;overflow:hidden;box-shadow:0 6px 30px #000}
+#yt,#vid{position:absolute;inset:0;width:100%;height:100%}
+#yt iframe{width:100%;height:100%}
+#vid{display:none;background:#000}
+#empty{position:absolute;inset:0;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;text-align:center;color:#c9aa8a;padding:20px;font-size:14px}
+#empty b{font-size:22px;color:var(--gold)}
+.cur{position:absolute;top:0;bottom:0;width:51%;z-index:6;pointer-events:none;transition:transform 1.6s cubic-bezier(.6,0,.2,1);background:repeating-linear-gradient(90deg,#5e0914 0,#a3162b 14px,#6d0c18 28px)}
+.cur:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35),transparent 30%,rgba(0,0,0,.3))}
+#cl{left:0;border-right:2px solid #3a0610}#cr{right:0;border-left:2px solid #3a0610}
+#stage.open #cl{transform:translateX(-100%)}#stage.open #cr{transform:translateX(100%)}
+#cams{position:absolute;right:6px;bottom:6px;display:flex;gap:6px;z-index:8}
+#cams video{width:70px;height:94px;object-fit:cover;border-radius:10px;background:#222;border:2px solid var(--gold)}
+#cams video.me{border-color:#ff6b81}
+#bar{display:flex;gap:6px;padding:8px;overflow-x:auto;background:#12070a;scrollbar-width:none}
+#bar button{white-space:nowrap;padding:8px 12px;font-size:14px}
+#brk{background:#b3202f;font-weight:700}
+#src{display:flex;gap:6px;padding:6px 8px;background:#0b0507}
+#src input{padding:9px}
+#q{display:none;padding:4px 10px;background:#12070a;font-family:system-ui;font-size:12px;color:#c9aa8a;max-height:70px;overflow:auto}
+#q div{padding:2px 0}
+#chat{flex:1;overflow-y:auto;padding:8px 10px;display:flex;flex-direction:column;gap:6px;min-height:0;font-family:system-ui}
+.m{max-width:80%;padding:7px 11px;border-radius:14px;background:#2a1a1f;align-self:flex-start;word-break:break-word}
+.m.me{align-self:flex-end;background:#7d1424}
+.m.big{font-size:44px;background:none;padding:0}
+.m.sys{align-self:center;background:none;color:#8d7a68;font-size:12px;text-align:center}
+#emo{display:none;padding:6px 8px;gap:4px;flex-wrap:wrap;background:#12070a}
+#emo span{font-size:28px;padding:2px 5px}
+#emo.st span{font-size:46px}
+#in{display:flex;gap:6px;padding:8px;background:#12070a;padding-bottom:max(8px,env(safe-area-inset-bottom))}
+#in input{flex:1}
+#overlay{display:none;position:fixed;inset:0;background:rgba(10,3,5,.92);z-index:20;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;font-size:22px;padding:20px}
+#overlay .big{font-size:60px}
+#modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:25;align-items:center;justify-content:center}
+#modal .ticket{width:86%;max-width:340px}
+#fly{position:fixed;left:0;right:0;bottom:30%;text-align:center;font-size:90px;pointer-events:none;z-index:30;opacity:0}
+#fly.go{animation:fl 1.8s ease-out}
+@keyframes fl{0%{opacity:1;transform:translateY(0) scale(.6)}100%{opacity:0;transform:translateY(-220px) scale(1.4)}}
+</style></head><body>
+<div id="lobby">
+  <div class="marq"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  <h1>🎬 Dosti Buddy</h1>
+  <p class="sub">Apna private theatre. Dost ke saath video call + saath dekho.</p>
+  <div class="ticket">
+    <input id="name" placeholder="Tumhara naam" maxlength="16">
+    <button class="pri" id="mk">🎟 Naya show shuru karo</button>
+    <div class="sub">ya dost ka code daalo</div>
+    <div class="row"><input id="jc" placeholder="CODE" maxlength="4" style="text-transform:uppercase;letter-spacing:4px;text-align:center"><button class="pri" id="jn">Join</button></div>
+  </div>
+  <p id="lerr"></p>
+  <div class="marq"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+</div>
+<div id="app">
+  <div id="top"><span class="code" id="code"></span><span id="status">Dost ka wait...</span><button id="cp">Link copy</button></div>
+  <div id="show"></div>
+  <div id="stage">
+    <div id="yt"></div><video id="vid" playsinline controls></video>
+    <div id="empty"><b>🎭 Intermission</b>Neeche YouTube link daalo ya apni video file chuno</div>
+    <div class="cur" id="cl"></div><div class="cur" id="cr"></div>
+    <div id="cams"><video id="rv" autoplay playsinline></video><video id="lv" class="me" autoplay playsinline muted></video></div>
+  </div>
+  <div id="src"><input id="yurl" placeholder="YouTube link paste karo" inputmode="url"><button class="pri" id="yg">▶ Chalao</button><button id="qb" title="Line me lagao">➕</button><button id="fb">📁</button><input type="file" id="ff" accept="video/*" hidden></div>
+  <div id="q"></div>
+  <div id="bar"><button id="inv" class="pri">👋 Dost ko bulao</button><button id="shr">📤 Share</button><button id="nchg">✏️ Number badlo</button><button id="brk">☕ Break</button><button id="nx">⏭ Next</button><button id="sy">🔄 Sync</button><button id="st">🎟 Showtime</button><button id="mic">🎤 Mic</button><button id="cam">📷 Cam</button><button id="emb">😀</button><button id="stb">🎉 Stickers</button></div>
+  <div id="emo"></div>
+  <div id="chat"></div>
+  <div id="in"><input id="msg" placeholder="Message likho..." autocomplete="off"><button class="pri" id="send">➤</button></div>
+</div>
+<div id="overlay"><div class="big">☕</div><div id="obt"></div><button class="pri" id="resume">▶ Dono resume karo</button></div>
+<div id="modal"><div class="ticket"><b style="color:var(--gold)">🎟 Show ka time</b><input type="time" id="stime"><button class="pri" id="ssave">Set karo</button><button id="sclr">Hata do</button><button id="scl">Band</button></div></div>
+<div id="nmod" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:25;align-items:center;justify-content:center"><div class="ticket" style="width:86%;max-width:340px"><b style="color:var(--gold)">👋 Dost ka WhatsApp number</b><div style="font-size:12px;color:#c9aa8a;font-family:system-ui">Sirf is phone me save hoga. Kisi server pe nahi jayega.</div><input id="nin" type="tel" inputmode="tel" placeholder="95xxxxxxxx" maxlength="15"><button class="pri" id="nsave">Save karo aur bulao</button><button id="ncl">Band</button></div></div>
+<div id="fly"></div>
+<script>
+const $=id=>document.getElementById(id);
+const ICE={iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:stun1.l.google.com:19302'},{urls:'stun:stun2.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'}]};
+let peer,conn,call,local,myName='',isHost=false,code='',ytp=null,mode='none',quiet=false,micOn=true,camOn=true,peerName='Dost',ytId_='',showAt=0,queue=[],ytReady=false,pend=null,showFired=false;
+const EMO=Array.from('😀😂🤣😍😎😭😡👍🙏🔥❤️🎉😮🤔😴🙌💀🍿');
+const STK=['🍿','🎬','😂','🤣','😭','❤️','🔥','👏','😱','🥳','💀','🙈'];
+function fill(el,list){list.forEach(e=>{const s=document.createElement('span');s.textContent=e;s.onclick=()=>{if(el.classList.contains('st'))sendSticker(e);else{$('msg').value+=e}};el.appendChild(s)})}
+function sys(t){add(t,'sys')}
+function add(t,c){const d=document.createElement('div');d.className='m '+(c||'');d.textContent=t;$('chat').appendChild(d);$('chat').scrollTop=1e9}
+function send(o){if(conn&&conn.open)conn.send(o)}
+function sendMsg(){const v=$('msg').value.trim();if(!v)return;add(v,'me');send({t:'chat',v});$('msg').value=''}
+function sendSticker(e){add(e,'me big');send({t:'stk',v:e});fly(e)}
+function fly(e){const f=$('fly');f.textContent=e;f.classList.remove('go');void f.offsetWidth;f.classList.add('go')}
+function curtains(open){$('stage').classList.toggle('open',!!open)}
+$('send').onclick=sendMsg;$('msg').onkeydown=e=>{if(e.key==='Enter')sendMsg()};
+fill($('emo'),EMO);
+function emoShow(kind){const e=$('emo');if(e.style.display==='flex'&&e.dataset.k===kind){e.style.display='none';return}e.innerHTML='';e.classList.toggle('st',kind==='s');fill(e,kind==='s'?STK:EMO);e.dataset.k=kind;e.style.display='flex'}
+$('emb').onclick=()=>emoShow('e');$('stb').onclick=()=>emoShow('s');
+async function media(){try{local=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:480,height:640},audio:{echoCancellation:true,noiseSuppression:true}})}catch(e){try{local=await navigator.mediaDevices.getUserMedia({audio:true});camOn=false}catch(e2){local=new MediaStream()}}$('lv').srcObject=local}
+function start(host){myName=$('name').value.trim()||'Main';isHost=host;$('lerr').textContent='';
+ if(host)code=Array.from({length:4},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.random()*32|0]).join('');
+ else{code=$('jc').value.trim().toUpperCase();if(code.length!==4){$('lerr').textContent='4 letter ka code daalo';return}}
+ Promise.race([media(),new Promise(r=>setTimeout(()=>{if(!local){local=new MediaStream();$('lv').srcObject=local}r()},30000))]).then(()=>{
+  if(!local.getTracks().length)sys('Camera/mic nahi mila - chat aur video sync chalega');
+  peer=new Peer(host?'wtog-'+code:undefined,{config:ICE});
+  peer.on('error',e=>{if(e.type==='unavailable-id'){$('lerr').textContent='Code busy, dobara try karo';location.reload()}else if(e.type==='peer-unavailable'){sys('Room nahi mila. Code check karo ya dost se room shuru karwao.');$('status').textContent='Room nahi mila'}else sys('Error: '+e.type)});
+  peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}});
+  peer.on('open',()=>{showApp();if(!host)dial()});
+  if(host){peer.on('connection',c=>{conn=c;setupConn()});peer.on('call',c=>{call=c;c.answer(local);setupCall()})}
+ })}
+function hint(){setTimeout(()=>{if(!(conn&&conn.open))sys('Abhi tak connect nahi hua. Dono Chrome me hon, internet on ho, aur code sahi ho. Dono ek hi WiFi pe try karo.')},25000)}
+function dial(){hint();conn=peer.connect('wtog-'+code,{reliable:true});setupConn();call=peer.call('wtog-'+code,local);setupCall()}
+function showApp(){$('lobby').style.display='none';$('app').style.display='flex';$('code').textContent=code;history.replaceState(null,'','?room='+code)}
+function setupCall(){call.on('stream',s=>{$('rv').srcObject=s;$('rv').play&&$('rv').play().catch(()=>{})})}
+function setupConn(){conn.on('open',()=>{$('status').textContent='Connected ✓';send({t:'hi',n:myName});sys('Connected! Show shuru karne ke liye link daalo 🍿')});
+ conn.on('close',()=>{$('status').textContent='Dost chala gaya';sys(peerName+' disconnect ho gaya')});
+ conn.on('data',onData)}
+function onData(d){switch(d.t){
+ case'hi':peerName=d.n;$('status').textContent=peerName+' ke saath ✓';sys(peerName+' aa gaya! 🎉');if(isHost){if(mode==='yt')send({t:'load',k:'yt',id:ytId_,c:ytTime(),p:ytPlaying()});if(showAt)send({t:'show',at:showAt});send({t:'q',q:queue})}break;
+ case'chat':add(peerName+': '+d.v);break;
+ case'stk':add(d.v,'big');fly(d.v);break;
+ case'load':loadRemote(d);break;
+ case'ps':applyPlay(d);break;
+ case'brk':showBreak(d.n);break;
+ case'res':hideBreak(true);break;
+ case'show':setShow(d.at,true);break;
+ case'q':queue=d.q;drawQ();break;
+ case'sync?':if(mode==='yt')send({t:'ps',p:ytPlaying(),c:ytTime()});else if(mode==='file')send({t:'ps',p:!$('vid').paused,c:$('vid').currentTime});break;
+ case'hb':if(!quiet&&mode!=='none')driftFix(d);break;
+ case'fileid':sys(peerName+' ne file chuni: '+d.name+'. Tum bhi wahi file chuno (📁).')}}
+// ---- YouTube ----
+function ytIdOf(u){const m=u.match(/(?:youtu\.be\/|v=|shorts\/|embed\/|live\/)([\w-]{11})/);return m&&m[1]}
+const tg=document.createElement('script');tg.src='https://www.youtube.com/iframe_api';document.head.appendChild(tg);
+window.onYouTubeIframeAPIReady=()=>{ytReady=true;if(pend){mkYT(pend.id,pend.c,pend.p);pend=null}};
+function ytTime(){try{return ytp.getCurrentTime()}catch(e){return 0}}
+function ytPlaying(){try{return ytp.getPlayerState()===1}catch(e){return false}}
+function guard(ms){quiet=true;clearTimeout(guard.t);guard.t=setTimeout(()=>quiet=false,ms||1200)}
+function mkYT(id,t,play){if(!ytReady){pend={id,c:t,p:play};return}
+ mode='yt';ytId_=id;$('vid').style.display='none';try{$('vid').pause()}catch(e){}$('empty').style.display='none';$('yt').style.display='block';curtains(true);guard(2500);
+ if(ytp&&ytp.loadVideoById){ytp.loadVideoById({videoId:id,startSeconds:t||0});if(!play)setTimeout(()=>{try{ytp.pauseVideo()}catch(e){}},900);return}
+ const h=document.createElement('div');h.id='ytp';$('yt').innerHTML='';$('yt').appendChild(h);
+ ytp=new YT.Player('ytp',{width:'100%',height:'100%',videoId:id,playerVars:{playsinline:1,start:t|0,rel:0,modestbranding:1,autoplay:play?1:0},events:{
+  onReady:()=>{if(play)ytp.playVideo()},
+  onStateChange:e=>{if(e.data===0){if(isHost)nextVideo(true);return}if(quiet)return;if(e.data===1||e.data===2)send({t:'ps',p:e.data===1,c:ytp.getCurrentTime()})},
+  onError:e=>{sys('Ye video embed nahi ho sakti (code '+e.data+'). Dusra link try karo.')}}})}
+function loadYT(id,fromQueue){mkYT(id,0,true);send({t:'load',k:'yt',id,c:0,p:true});sys('YouTube video lagayi 🍿')}
+$('yg').onclick=()=>{const id=ytIdOf($('yurl').value.trim());if(!id){sys('Sahi YouTube link daalo');return}$('yurl').value='';loadYT(id)};
+$('qb').onclick=()=>{const id=ytIdOf($('yurl').value.trim());if(!id){sys('Sahi YouTube link daalo');return}$('yurl').value='';queue.push(id);send({t:'q',q:queue});drawQ();if(mode==='none')nextVideo()};
+function drawQ(){const q=$('q');q.style.display=queue.length?'block':'none';q.innerHTML='';queue.forEach((id,i)=>{const d=document.createElement('div');d.textContent=(i+1)+'. youtu.be/'+id;q.appendChild(d)})}
+function nextVideo(auto){if(!queue.length){if(!auto)sys('Line khaali hai. ➕ se aur videos lagao.');return}const id=queue.shift();send({t:'q',q:queue});drawQ();loadYT(id)}
+$('nx').onclick=()=>nextVideo();
+// ---- local file ----
+$('fb').onclick=()=>$('ff').click();
+$('ff').onchange=e=>{const f=e.target.files[0];if(!f)return;setFile(f);send({t:'fileid',name:f.name})};
+function setFile(f){mode='file';$('empty').style.display='none';$('yt').style.display='none';try{ytp&&ytp.pauseVideo()}catch(e){};const v=$('vid');v.style.display='block';v.src=URL.createObjectURL(f);curtains(true);sys('File: '+f.name)}
+['play','pause'].forEach(ev=>$('vid').addEventListener(ev,()=>{if(quiet)return;send({t:'ps',p:ev==='play',c:$('vid').currentTime})}));
+$('vid').addEventListener('seeked',()=>{if(!quiet)send({t:'ps',p:!$('vid').paused,c:$('vid').currentTime})});
+function loadRemote(d){if(d.k==='yt'){mkYT(d.id,d.c||0,d.p!==false);sys(peerName+' ne video lagayi 🍿')}}
+function applyPlay(d){guard(1000);
+ if(mode==='yt'&&ytp&&ytp.getCurrentTime){if(Math.abs(ytTime()-d.c)>1.2)ytp.seekTo(d.c,true);d.p?ytp.playVideo():ytp.pauseVideo()}
+ else if(mode==='file'){const v=$('vid');if(Math.abs(v.currentTime-d.c)>1.2)v.currentTime=d.c;d.p?v.play().catch(()=>{}):v.pause()}}
+function driftFix(d){if(!d.p)return;const t=mode==='yt'?ytTime():$('vid').currentTime;if(Math.abs(t-d.c)>3){guard(1000);mode==='yt'?ytp.seekTo(d.c,true):($('vid').currentTime=d.c)}}
+setInterval(()=>{if(isHost&&conn&&conn.open&&mode!=='none'){const p=mode==='yt'?ytPlaying():!$('vid').paused;send({t:'hb',p,c:mode==='yt'?ytTime():$('vid').currentTime})}},5000);
+$('sy').onclick=()=>{send({t:'sync?'});sys('Sync maanga...')};
+// ---- break ----
+function showBreak(n){guard(1500);try{mode==='yt'?ytp.pauseVideo():$('vid').pause()}catch(e){};$('obt').textContent=n+' ne Intermission (Break) liya. Dono ki video ruki hai.';$('overlay').style.display='flex'}
+function hideBreak(remote){$('overlay').style.display='none';if(!remote)send({t:'res'})}
+$('brk').onclick=()=>{showBreak('Tumne');send({t:'brk',n:myName})};
+$('resume').onclick=()=>{hideBreak(false);guard(1200);try{if(mode==='yt')ytp.playVideo();else if(mode==='file')$('vid').play().catch(()=>{})}catch(e){}};
+// ---- showtime ----
+$('st').onclick=()=>{$('modal').style.display='flex'};$('scl').onclick=()=>$('modal').style.display='none';
+$('ssave').onclick=()=>{const v=$('stime').value;if(!v)return;const [h,m]=v.split(':').map(Number);const d=new Date();d.setHours(h,m,0,0);if(d<=Date.now())d.setDate(d.getDate()+1);setShow(d.getTime(),false);$('modal').style.display='none'};
+$('sclr').onclick=()=>{setShow(0,false);$('modal').style.display='none'};
+function setShow(at,remote){showAt=at;showFired=false;if(!remote)send({t:'show',at});if(at)sys('🎟 Showtime set: '+new Date(at).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}));tick()}
+function tick(){const s=$('show');if(!showAt){s.style.display='none';return}s.style.display='block';const ms=showAt-Date.now();
+ if(ms<=0){s.textContent='🎬 Show shuru! Enjoy 🍿';if(!showFired){showFired=true;fly('🎬');curtains(true)}return}
+ const h=Math.floor(ms/36e5),m=Math.floor(ms%36e5/6e4),sc=Math.floor(ms%6e4/1e3);
+ s.textContent='🎟 Show '+new Date(showAt).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})+'  ·  '+(h?h+'h ':'')+m+'m '+String(sc).padStart(2,'0')+'s baaki'}
+setInterval(tick,1000);
+// ---- controls ----
+$('mic').onclick=()=>{micOn=!micOn;local.getAudioTracks().forEach(t=>t.enabled=micOn);$('mic').textContent=micOn?'🎤 Mic':'🔇 Mic off'};
+$('cam').onclick=()=>{camOn=!camOn;local.getVideoTracks().forEach(t=>t.enabled=camOn);$('cam').textContent=camOn?'📷 Cam':'🚫 Cam off'};
+function link(){return location.origin+location.pathname+'?room='+code}
+$('cp').onclick=()=>{(navigator.clipboard?navigator.clipboard.writeText(link()):Promise.reject()).then(()=>$('cp').textContent='Copied ✓').catch(()=>prompt('Link copy karo',link()))};
+function inviteText(){let t='Oye \ud83d\udc4b '+myName+' ne Dosti Buddy pe private theatre banaya hai. Movie dekhne aa jao! \ud83c\udf7f\ud83c\udfac\n';if(showAt)t+='Show: '+new Date(showAt).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'})+'\n';return t+'Chrome me link kholo, naam daalo aur Join dabao:\n'+link()+'\nCode: '+code}
+function friendNum(){return localStorage.getItem('db_friend')||''}
+function normNum(v){let d=(v||'').replace(/\D/g,'');if(d.length===10)d='91'+d;else if(d.length===11&&d[0]==='0')d='91'+d.slice(1);return d.length>=11&&d.length<=15?d:''}
+function openWA(){const n=friendNum();window.open('https://wa.me/'+n+'?text='+encodeURIComponent(inviteText()),'_blank')}
+$('inv').onclick=()=>{if(friendNum())openWA();else{$('nin').value='';$('nmod').style.display='flex'}};
+$('nchg').onclick=()=>{$('nin').value=friendNum();$('nmod').style.display='flex'};
+$('ncl').onclick=()=>$('nmod').style.display='none';
+$('nsave').onclick=()=>{const n=normNum($('nin').value);if(!n){$('nin').style.borderColor='#ff6b81';return}localStorage.setItem('db_friend',n);$('nmod').style.display='none';openWA()};
+$('shr').onclick=()=>{if(navigator.share)navigator.share({text:inviteText()}).catch(()=>{});else window.open('https://wa.me/?text='+encodeURIComponent(inviteText()),'_blank')};
+$('mk').onclick=()=>start(true);$('jn').onclick=()=>start(false);
+const qr=new URLSearchParams(location.search).get('room');if(qr){$('jc').value=qr;$('mk').textContent='🎟 Naya show shuru karo (apna)'}
+</script></body></html>
