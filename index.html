@@ -375,6 +375,7 @@ function onData(d){if(d.t==='movie-retry'&&mode==='file'){stopMovieCast();startM
  case'q':queue=d.q;drawQ();break;
  case'sync?':if(mode!=='none')send({t:'ps',p:playing(),c:cur(),seek:1});break;
  case'hb':if(mode!=='none')driftFix(d);break;
+ case'movie-state':if(mode==='stream'){streamPlaying=d.p;streamTime=d.c;streamDuration=d.d;icon()}break;
  case'movie-ctl':if(mode==='file')ctl(d.p,d.delta==null?null:Math.max(0,cur()+d.delta));break;
  case'movie-info':if(mode==='stream')movieNotice(d.v);break;
  case'fileid':break;
@@ -384,13 +385,13 @@ function ytIdOf(u){const m=u.match(/(?:youtu\.be\/|v=|shorts\/|embed\/|live\/)([
 const tg=document.createElement('script');tg.src='https://www.youtube.com/iframe_api';document.head.appendChild(tg);
 window.onYouTubeIframeAPIReady=()=>{ytReady=true;if(pend){mkYT(pend.id,pend.c,pend.p);pend=null}};
 let lastLocal=0,dragging=false,lastFileName='',peerFile='',fileErr='',stallN=0,stallWin=0,stallMsgAt=0;
-function cur(){try{return mode==='yt'?ytp.getCurrentTime():(mode==='file'||mode==='stream')?$('vid').currentTime:0}catch(e){return 0}}
-function dur(){try{return mode==='yt'?ytp.getDuration():(mode==='file'||mode==='stream')?$('vid').duration:0}catch(e){return 0}}
-function playing(){try{return mode==='yt'?ytp.getPlayerState()===1:(mode==='file'||mode==='stream')?!$('vid').paused:false}catch(e){return false}}
+function cur(){if(mode==='stream')return streamTime;try{return mode==='yt'?ytp.getCurrentTime():(mode==='file'||mode==='stream')?$('vid').currentTime:0}catch(e){return 0}}
+function dur(){if(mode==='stream')return streamDuration;try{return mode==='yt'?ytp.getDuration():(mode==='file'||mode==='stream')?$('vid').duration:0}catch(e){return 0}}
+function playing(){if(mode==='stream')return streamPlaying;try{return mode==='yt'?ytp.getPlayerState()===1:(mode==='file'||mode==='stream')?!$('vid').paused:false}catch(e){return false}}
 function setT(t){if(mode==='stream')return;try{mode==='yt'?ytp.seekTo(t,true):($('vid').currentTime=t)}catch(e){}}
 function doPlay(p){try{if(mode==='yt')p?ytp.playVideo():ytp.pauseVideo();else if(mode==='file'){const v=$('vid');if(p)v.play().catch(()=>{});else v.pause()}}catch(e){}}
 function fmt(t){t=Math.max(0,t|0);const h=t/3600|0,m=(t%3600)/60|0,s=t%60;return (h?h+':'+String(m).padStart(2,'0'):m)+':'+String(s).padStart(2,'0')}
-function ctl(p,seekTo){if(mode==='stream'){send({t:'movie-ctl',p,delta:seekTo==null?null:seekTo-cur()});if(p)$('vid').play().catch(()=>movieNotice('▶ Movie dekhne ke liye yahan tap karo',true));return}lastLocal=Date.now();if(seekTo!=null)setT(seekTo);doPlay(p);send({t:'ps',p,c:seekTo!=null?seekTo:cur(),seek:seekTo!=null?1:0});icon()}
+function ctl(p,seekTo){if(mode==='stream'){streamPlaying=p;icon();send({t:'movie-ctl',p,delta:seekTo==null?null:seekTo-cur()});if(p)$('vid').play().catch(()=>movieNotice('▶ Movie dekhne ke liye yahan tap karo',true));return}lastLocal=Date.now();if(seekTo!=null)setT(seekTo);doPlay(p);send({t:'ps',p,c:seekTo!=null?seekTo:cur(),seek:seekTo!=null?1:0});icon()}
 function icon(){$('pp').textContent=playing()?'⏸':'▶'}
 $('pp').onclick=()=>ctl(!playing());
 $('bk').onclick=()=>ctl(playing(),Math.max(0,cur()-10));
@@ -550,7 +551,7 @@ setInterval(applyVol,1500);applyVol();
 $('stage').addEventListener('click',()=>$('volp').classList.remove('on'));
 
 // Movie stream is separate from camera/mic. No movie file is uploaded to a server.
-let movieCall=null,movieStream=null,movieURL='',movieSent=false,movieToken=0;
+let movieCall=null,movieStream=null,movieURL='',movieSent=false,movieToken=0,streamPlaying=true,streamTime=0,streamDuration=0;setInterval(()=>{if(mode==='file'&&conn&&conn.open)send({t:'movie-state',p:!$('vid').paused,c:$('vid').currentTime,d:$('vid').duration})},1000);
 function movieNotice(text,tap){$('fnb_t').textContent=text;$('fnbar').classList.toggle('on',!!text);$('fnb_b').style.display=tap?'block':'none';$('fnb_b').textContent='▶ Dekho / awaaz chalu';}
 function stopMovieCast(){movieToken++;const c=movieCall;movieCall=null;movieSent=false;if(c){try{c.close()}catch(e){}}if(movieStream){movieStream.getTracks().forEach(t=>t.stop());movieStream=null}}
 function startMovieCast(){
