@@ -232,7 +232,7 @@ body.rfs #cams{display:flex!important;top:10px}
 body.rfs.hud-off #cams,body.rfs.hud-off #cov{display:flex!important}
 body.rfs #top{background:none!important}
 body.rfs #chat,body.rfs #in,body.rfs #pq,body.rfs #emo{display:none!important}
-#fnbar{position:absolute;left:8px;right:8px;bottom:calc(var(--dock,62px) + 48px);z-index:60;background:rgba(20,6,8,.94);border:1px solid var(--gold);border-radius:12px;padding:8px 10px;display:none;align-items:center;gap:8px;font:13px system-ui;color:#ffe9c9;box-shadow:0 4px 18px #000}
+#fnbar{position:absolute;left:8px;right:8px;bottom:calc(var(--dock,62px) + 90px);z-index:60;background:rgba(20,6,8,.94);border:1px solid var(--gold);border-radius:12px;padding:8px 10px;display:none;align-items:center;gap:8px;font:13px system-ui;color:#ffe9c9;box-shadow:0 4px 18px #000}
 #fnbar.on{display:flex}#fnbar span{flex:1;line-height:1.35}#fnbar button{white-space:nowrap;padding:8px 12px}
 #dg{position:fixed;left:8px;top:48px;z-index:43;font:11px system-ui;color:#ffd36b;background:rgba(10,3,5,.7);padding:3px 8px;border-radius:10px;pointer-events:none;max-width:58%;line-height:1.4}body.rfs #dg,body.hud-off #dg{display:none}#cam2{position:fixed;right:8px;z-index:44;top:calc(50px + 2*var(--ch) + 22px);background:rgba(163,22,43,.92);color:#fff;border:1px solid #ffd36b;border-radius:14px;padding:6px 10px;font:700 13px system-ui;display:none;flex-direction:column;align-items:center;min-width:64px}
 #cam2 i{font-size:24px;font-style:normal}#cam2 small{font-size:11px}body.in-app #cam2{display:flex}body.rfs #cam2,body.hud-off #cam2,body.cam-off #cam2{display:none}
@@ -267,7 +267,7 @@ body.p-chat #vol{top:calc(2*var(--ch) + 130px)}
   </div>
   <div id="pq"><div id="tabs"><button id="t-yt" class="on">▶ YouTube</button><button id="t-mv">🎞 Movie</button></div>
   <div id="p-yt"><div id="src"><textarea id="yurl" rows="2" placeholder="YouTube link(s) paste karo - 3-4 ek saath bhi chalega" inputmode="url"></textarea><div class="col"><button class="pri" id="yg">▶ Chalao</button></div></div><div id="q"></div><div id="rc"></div></div>
-  <div id="p-mv" style="display:none"><div class="srcm" style="display:flex;gap:6px;padding:6px 8px"><div style="flex:1;font-size:12px;color:#c9aa8a;font-family:system-ui">Movie file dono ke phone me honi chahiye (MP4 sabse best hai - MKV/HEVC aksar nahi chalti). Dono wahi file chuno, phir play/pause sync rahega.</div><button class="pri" id="fb">📁 File chuno</button><input type="file" id="ff" accept="video/*" hidden></div></div>
+  <div id="p-mv" style="display:none"><div class="srcm" style="display:flex;gap:6px;padding:6px 8px"><div style="flex:1;font-size:12px;color:#c9aa8a;font-family:system-ui">Ek phone par movie chuno. Connected dost ko live movie bhejenge; usse file chunni nahi padegi. Dono ka internet data lagega. MP4 H.264/AAC try karo; support phone par depend karta hai.</div><button class="pri" id="fb">📁 File chuno</button><input type="file" id="ff" accept="video/*" hidden></div></div>
   </div>
   <div id="tr"><button id="pp">▶</button><button id="bk">⏪10</button><button id="fw">10⏩</button><input type="range" id="sk" min="0" max="1000" value="0"><span id="tm">0:00</span><button id="fsb2" title="Poori screen">⛶ Full</button></div>
   <div id="bar"><button id="chb"><i>💬</i><small>Chat</small></button><button id="qpb"><i>➕</i><small>Video</small></button><button id="emb"><i>😀</i><small>React</small></button><button id="stb"><i>🎉</i><small>Sticker</small></button><button id="brk"><i>☕</i><small>Break</small></button><button id="mic"><i>🎤</i><small>Mic</small></button><button id="cam"><i>📷</i><small>Cam</small></button><button id="cs" title="Camera size"><i>🧑‍🤝‍🧑</i><small>Cam size</small></button><button id="inv" class="pri"><i>👋</i><small>Bulao</small></button><button id="nx"><i>⏭</i><small>Next</small></button><button id="shr"><i>📤</i><small>Share</small></button><button id="nchg"><i>✏️</i><small>Number</small></button><button id="st"><i>🎟</i><small>Showtime</small></button><button id="sy"><i>🔄</i><small>Sync</small></button></div>
@@ -341,7 +341,7 @@ function mkPeer(host){
   peer.on('error',e=>{if(e.type==='unavailable-id'){if(resumeTries++<10){if(resumeTries===1)sys('Room wapas jud raha hai...');try{peer.destroy()}catch(x){}setTimeout(()=>mkPeer(host),3000)}else{$('lerr').textContent='Dobara try karo';location.reload()}}else if(e.type==='peer-unavailable'){$('status').textContent='Host ka wait...';if(!redialT)redialT=setTimeout(()=>{redialT=0;if(!(conn&&conn.open)&&peer&&!peer.destroyed)dial(true)},4000)}else sys('Error: '+e.type)});
   peer.on('disconnected',()=>{try{peer.reconnect()}catch(e){}});
   peer.on('open',()=>{showApp();restoreSt();if(!host)dial()});
-  if(host){peer.on('connection',c=>{if(conn&&conn!==c){try{conn.close()}catch(e){}}conn=c;setupConn()});peer.on('call',c=>{call=c;c.answer(local);setupCall()})}
+  if(host){peer.on('connection',c=>{if(conn&&conn!==c){try{conn.close()}catch(e){}}conn=c;setupConn()})}peer.on('call',c=>{if(c.metadata&&c.metadata.kind==='movie'){receiveMovie(c)}else{call=c;c.answer(local);setupCall()}})
 }
 let redialT=0;
 function stKey(){return 'db_st_'+code}
@@ -361,8 +361,8 @@ function setupCall(){const cc=call;let got=false;cc.on('stream',s=>{got=true;$('
 function setupConn(){conn.on('open',()=>{setTimeout(sendDiag,500);$('status').textContent='Connected ✓';send({t:'hi',n:myName});sys('Connected! Show shuru karne ke liye link daalo 🍿')});
  conn.on('close',()=>{$('status').textContent='Dost chala gaya';if(!isHost&&!leaving&&!redialT)redialT=setTimeout(()=>{redialT=0;if(!(conn&&conn.open)&&peer&&!peer.destroyed)dial(true)},3000)});
  conn.on('data',onData)}
-function onData(d){switch(d.t){
- case'hi':peerName=d.n;$('status').textContent=peerName+' ke saath ✓';sys(peerName+' aa gaya! 🎉');if(isHost){if(mode==='file'&&lastFileName){send({t:'fileid',name:lastFileName});setTimeout(()=>send({t:'ps',p:playing(),c:cur(),seek:1}),800)}if(mode==='yt'){send({t:'load',k:'yt',id:ytId_,c:cur(),p:playing()});const pp_=playing(),cc_=cur();setTimeout(()=>send({t:'ps',p:playing(),c:cur(),seek:1}),2500)}if(showAt)send({t:'show',at:showAt});send({t:'q',q:queue})}break;
+function onData(d){if(d.t==='movie-retry'&&mode==='file'){stopMovieCast();startMovieCast();return}switch(d.t){
+ case'hi':if(mode==='file')setTimeout(startMovieCast,700);peerName=d.n;$('status').textContent=peerName+' ke saath ✓';sys(peerName+' aa gaya! 🎉');if(isHost){if(mode==='yt'){send({t:'load',k:'yt',id:ytId_,c:cur(),p:playing()});const pp_=playing(),cc_=cur();setTimeout(()=>send({t:'ps',p:playing(),c:cur(),seek:1}),2500)}if(showAt)send({t:'show',at:showAt});send({t:'q',q:queue})}break;
  case'dg':pDiag=d;break;
  case'chat':add(d.v,'',peerName);break;
  case'rx':react(d.v,false);break;
@@ -375,30 +375,31 @@ function onData(d){switch(d.t){
  case'q':queue=d.q;drawQ();break;
  case'sync?':if(mode!=='none')send({t:'ps',p:playing(),c:cur(),seek:1});break;
  case'hb':if(mode!=='none')driftFix(d);break;
- case'fileid':tab('mv');peerFile=d.name;sys(peerName+' ne file chuni: '+d.name+'. Tum bhi wahi file chuno.');
-  if(mode!=='file'){$('fnb_t').textContent='🎞 '+peerName+' ne movie chuni: '+d.name+' - wahi file apne phone se chuno, tabhi dikhegi.';$('fnbar').classList.add('on')}
-  else if(lastFileName&&lastFileName!==d.name)sys('⚠️ Naam alag hai! Dost: '+d.name+' · Tum: '+lastFileName)}}
+ case'movie-ctl':if(mode==='file')ctl(d.p,d.delta==null?null:Math.max(0,cur()+d.delta));break;
+ case'movie-info':if(mode==='stream')movieNotice(d.v);break;
+ case'fileid':break;
+}}
 // ---- player core (YouTube + local file) ----
 function ytIdOf(u){const m=u.match(/(?:youtu\.be\/|v=|shorts\/|embed\/|live\/)([\w-]{11})/);return m&&m[1]}
 const tg=document.createElement('script');tg.src='https://www.youtube.com/iframe_api';document.head.appendChild(tg);
 window.onYouTubeIframeAPIReady=()=>{ytReady=true;if(pend){mkYT(pend.id,pend.c,pend.p);pend=null}};
 let lastLocal=0,dragging=false,lastFileName='',peerFile='',fileErr='',stallN=0,stallWin=0,stallMsgAt=0;
-function cur(){try{return mode==='yt'?ytp.getCurrentTime():mode==='file'?$('vid').currentTime:0}catch(e){return 0}}
-function dur(){try{return mode==='yt'?ytp.getDuration():mode==='file'?$('vid').duration:0}catch(e){return 0}}
-function playing(){try{return mode==='yt'?ytp.getPlayerState()===1:mode==='file'?!$('vid').paused:false}catch(e){return false}}
-function setT(t){try{mode==='yt'?ytp.seekTo(t,true):($('vid').currentTime=t)}catch(e){}}
+function cur(){try{return mode==='yt'?ytp.getCurrentTime():(mode==='file'||mode==='stream')?$('vid').currentTime:0}catch(e){return 0}}
+function dur(){try{return mode==='yt'?ytp.getDuration():(mode==='file'||mode==='stream')?$('vid').duration:0}catch(e){return 0}}
+function playing(){try{return mode==='yt'?ytp.getPlayerState()===1:(mode==='file'||mode==='stream')?!$('vid').paused:false}catch(e){return false}}
+function setT(t){if(mode==='stream')return;try{mode==='yt'?ytp.seekTo(t,true):($('vid').currentTime=t)}catch(e){}}
 function doPlay(p){try{if(mode==='yt')p?ytp.playVideo():ytp.pauseVideo();else if(mode==='file'){const v=$('vid');if(p)v.play().catch(()=>{});else v.pause()}}catch(e){}}
 function fmt(t){t=Math.max(0,t|0);const h=t/3600|0,m=(t%3600)/60|0,s=t%60;return (h?h+':'+String(m).padStart(2,'0'):m)+':'+String(s).padStart(2,'0')}
-function ctl(p,seekTo){lastLocal=Date.now();if(seekTo!=null)setT(seekTo);doPlay(p);send({t:'ps',p,c:seekTo!=null?seekTo:cur(),seek:seekTo!=null?1:0});icon()}
+function ctl(p,seekTo){if(mode==='stream'){send({t:'movie-ctl',p,delta:seekTo==null?null:seekTo-cur()});if(p)$('vid').play().catch(()=>movieNotice('▶ Movie dekhne ke liye yahan tap karo',true));return}lastLocal=Date.now();if(seekTo!=null)setT(seekTo);doPlay(p);send({t:'ps',p,c:seekTo!=null?seekTo:cur(),seek:seekTo!=null?1:0});icon()}
 function icon(){$('pp').textContent=playing()?'⏸':'▶'}
 $('pp').onclick=()=>ctl(!playing());
 $('bk').onclick=()=>ctl(playing(),Math.max(0,cur()-10));
 $('fw').onclick=()=>ctl(playing(),cur()+10);
 $('sk').addEventListener('input',()=>{dragging=true;$('tm').textContent=fmt($('sk').value/1000*dur())+' / '+fmt(dur())});
 $('sk').addEventListener('change',()=>{dragging=false;const d=dur();if(d>0)ctl(playing(),$('sk').value/1000*d)});
-setInterval(()=>{if(mode==='none'||dragging)return;const d=dur(),c=cur();if(d>0){$('sk').value=Math.round(c/d*1000);$('tm').textContent=fmt(c)+' / '+fmt(d)}icon()},500);
-function applyPlay(d){if(mode==='none')return;if(d.seek||Math.abs(cur()-d.c)>2)setT(d.c);doPlay(d.p);setTimeout(icon,300)}
-function driftFix(d){if(Date.now()-lastLocal<3000||document.getElementById('overlay').style.display==='flex')return;const pl=playing();
+setInterval(()=>{if(mode==='none'||dragging)return;const d=dur(),c=cur();if(Number.isFinite(d)&&d>0){$('sk').value=Math.round(c/d*1000);$('tm').textContent=fmt(c)+' / '+fmt(d)}icon()},500);
+function applyPlay(d){if(mode==='none'||mode==='stream'||mode==='file')return;if(d.seek||Math.abs(cur()-d.c)>2)setT(d.c);doPlay(d.p);setTimeout(icon,300)}
+function driftFix(d){if(mode==='stream'||mode==='file')return;if(Date.now()-lastLocal<3000||document.getElementById('overlay').style.display==='flex')return;const pl=playing();
  if(!d.p){if(pl)doPlay(false);return}
  if(!pl){doPlay(true);return}
  const dr=cur()-d.c;if(Math.abs(dr)>2.5){setT(d.c);if(mode==='file')$('vid').playbackRate=1}
@@ -407,7 +408,7 @@ setInterval(()=>{if(isHost&&conn&&conn.open&&mode!=='none')send({t:'hb',p:playin
 $('sy').onclick=()=>{send({t:'sync?'});sys('Sync maanga...')};
 // ---- YouTube ----
 function mkYT(id,t,play){if(!ytReady){pend={id,c:t,p:play};return}
- mode='yt';try{$('fnbar').classList.remove('on')}catch(e){}ytId_=id;document.body.classList.add('has-v');$('vid').style.display='none';try{$('vid').pause()}catch(e){}$('empty').style.display='none';$('yt').style.display='block';curtains(true);
+ stopMovieCast();mode='yt';try{$('fnbar').classList.remove('on')}catch(e){}ytId_=id;document.body.classList.add('has-v');$('vid').style.display='none';try{$('vid').pause()}catch(e){}$('empty').style.display='none';$('yt').style.display='block';curtains(true);
  if(ytp&&ytp.loadVideoById){ytp.loadVideoById({videoId:id,startSeconds:t||0});if(!play)setTimeout(()=>{try{ytp.pauseVideo()}catch(e){}},900);return}
  const h=document.createElement('div');h.id='ytp';$('yt').innerHTML='';$('yt').appendChild(h);
  ytp=new YT.Player('ytp',{width:'100%',height:'100%',videoId:id,playerVars:{playsinline:1,start:t|0,rel:0,modestbranding:1,controls:0,disablekb:1,fs:0,iv_load_policy:3,autoplay:play?1:0},events:{
@@ -435,20 +436,20 @@ function drawRc(){const r=recents(),box=$('rc');box.style.display=r.length?'bloc
  r.forEach(x=>{const d=document.createElement('div');d.className='qi';const sp=document.createElement('span');sp.textContent=x.t||('youtu.be/'+x.id);d.appendChild(sp);
   [['▶',()=>loadYT(x.id)],['➕',()=>{queue.push(x.id);pushQ();sys('Line me lagi')}]].forEach(([t,f])=>{const b=document.createElement('button');b.textContent=t;b.onclick=f;d.appendChild(b)});box.appendChild(d)})}
 // ---- local file ----
-$('fb').onclick=()=>$('ff').click();$('fnb_b').onclick=()=>$('ff').click();
-$('ff').onchange=e=>{const f=e.target.files[0];if(!f)return;setFile(f);send({t:'fileid',name:f.name});setTimeout(()=>send({t:'sync?'}),600);e.target.value=''};
-function setFile(f){tab('mv');mode='file';fileErr='';stallN=0;lastFileName=f.name;document.body.classList.add('has-v');$('empty').style.display='none';$('yt').style.display='none';$('fnbar').classList.remove('on');try{ytp&&ytp.pauseVideo()}catch(e){};const v=$('vid');v.controls=false;v.style.display='block';v.src=URL.createObjectURL(f);curtains(true);closeP();
+$('fb').onclick=()=>$('ff').click();$('fnb_b').onclick=()=>{if(mode==='stream'){$('vid').play().then(()=>movieNotice('')).catch(()=>movieNotice('Awaaz ke saath play ke liye dobara tap karo',true))}else $('ff').click()};
+$('ff').onchange=e=>{const f=e.target.files[0];if(!f)return;setFile(f);e.target.value=''};
+function setFile(f){stopMovieCast();$('vid').srcObject=null;tab('mv');mode='file';fileErr='';stallN=0;lastFileName=f.name;document.body.classList.add('has-v');$('empty').style.display='none';$('yt').style.display='none';$('fnbar').classList.remove('on');try{ytp&&ytp.pauseVideo()}catch(e){};const v=$('vid');v.controls=false;v.style.display='block';if(movieURL)URL.revokeObjectURL(movieURL);movieURL=URL.createObjectURL(f);v.src=movieURL;v.load();v.play().catch(()=>movieNotice('▶ Movie shuru karne ke liye Play dabao'));movieNotice('Movie load ho rahi hai...');curtains(true);closeP();
  const ext=(f.name.split('.').pop()||'').toLowerCase();
  if(['mkv','avi','flv','wmv','ts','vob','webm'].includes(ext))sys('⚠️ .'+ext+' file Chrome me aksar nahi chalti. Agar na chale to MP4 wali file chuno.');
  else if(ext!=='mp4'&&ext!=='m4v'&&ext!=='3gp')sys('⚠️ Agar ye file na chale to MP4 wali try karo.');
  if(peerFile&&peerFile!==f.name)sys('⚠️ Naam alag hai! Dost ne "'+peerFile+'" chuni, tumne "'+f.name+'". Sync ke liye dono me W A H I file honi chahiye.');
- sys('File: '+f.name+'. Dono phone me wahi file ho to Play dabao.')}
+ sys('File: '+f.name+'. Dost connected ho to movie live bhejenge.');setTimeout(startMovieCast,300)}
 {const v=$('vid');
  v.addEventListener('error',()=>{if(mode!=='file')return;const c=v.error&&v.error.code;fileErr='err'+(c||'?');
-  sys(c===4?'❌ Ye file is phone ke Chrome me nahi chal pa rahi (jaise kuch MKV/HEVC files). MP4 (H.264) wali movie chuno - wahi sabse achhi chalti hai.':c===2?'❌ Video decode nahi ho pa rahi - file kharab ya bahut heavy hai. Dusri/chhoti MP4 file try karo.':c===3?'❌ File padhne me dikkat aa rahi. Dobara chuno.':'❌ File chalane me dikkat. MP4 file try karo.')});
+  sys(c===4?'❌ Ye file is phone ke Chrome me nahi chal pa rahi (jaise kuch MKV/HEVC files). MP4 (H.264) wali movie chuno - wahi sabse achhi chalti hai.':c===3?'❌ Video decode nahi ho pa rahi. Dusri MP4 (H.264/AAC) file try karo.':c===2?'❌ File padhne me dikkat aa rahi. Dobara chuno.':'❌ File chalane me dikkat. MP4 file try karo.')});
  v.addEventListener('waiting',()=>{if(mode!=='file'||v.paused)return;const n=Date.now();if(n-stallWin>30000){stallN=0;stallWin=n}stallN++;
   if(stallN>=3&&n-stallMsgAt>90000){stallMsgAt=n;sys('⏳ Movie baar-baar ATAK rahi hai - ye file is phone pe smoothly nahi chal pa rahi (badi file, 4K, ya phone ka decoder). Chhoti MP4 file try karo, ya YouTube link use karo.')}});
- v.addEventListener('playing',()=>{stallN=0})}
+ v.addEventListener('playing',()=>{if(mode==='file')startMovieCast()});v.addEventListener('loadeddata',()=>{if(mode==='file')startMovieCast()})}
 function loadRemote(d){if(d.k==='yt'){loadYT(d.id,true);if(!(mode==='yt'&&ytId_===d.id))return;sys(peerName+' ne video lagayi 🍿')}}
 // ---- break ----
 function showBreak(n){doPlay(false);$('obt').textContent=n+' ne Intermission (Break) liya. Dono ki video ruki hai.';$('overlay').style.display='flex'}
@@ -531,12 +532,12 @@ function sendDiag(){send({t:'dg',cam:myCamOk(),mic:!!(local&&local.getAudioTrack
 function drawDg(){const d=$('dg');if(!document.body.classList.contains('in-app')){d.textContent='';return}
  const yn=b=>b?'✅':'❌';const c=(conn&&conn.open)?'✅ jude':'⏳ nahi jude';
  let rs=$('rv').srcObject,rv=rs&&rs.getVideoTracks().length&&$('rv').videoWidth>0;
- d.innerHTML='v9 · Meri cam '+yn(myCamOk())+' · Dost ka link '+c+'<br>Dost ki cam bheji '+(pDiag?yn(pDiag.cam):'?')+' · Mujhe dikh rahi '+yn(rv)+' · call: '+icest+(mode==='file'?'<br>Movie: '+(fileErr||'chalu ✓'):'')}
+ d.innerHTML='v10 · Meri cam '+yn(myCamOk())+' · Dost ka link '+c+'<br>Dost ki cam bheji '+(pDiag?yn(pDiag.cam):'?')+' · Mujhe dikh rahi '+yn(rv)+' · call: '+icest+(mode==='file'?'<br>Movie: '+(fileErr||'chalu ✓'):'')}
 setInterval(()=>{drawDg();if(conn&&conn.open)sendDiag()},3000);
 
 $('cam2').onclick=()=>$('cam').click();
 setInterval(()=>{const i=$('cam').querySelector('i').textContent;$('cam2').querySelector('i').textContent=(dummyCam||!myCamOk())?'📷':i;$('cam2').querySelector('small').textContent=(dummyCam||!myCamOk())?'Camera chalu karo':(camOn?'Camera band karo':'Camera chalu karo')},1000);
-document.getElementById('dg').dataset.v='v9';
+document.getElementById('dg').dataset.v='v10';
 if('serviceWorker' in navigator){let had=!!navigator.serviceWorker.controller;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had&&!document.body.classList.contains('in-app'))location.reload();had=true})}
 
 let vVid=+(localStorage.getItem('db_vvid')||100),vFr=+(localStorage.getItem('db_vfr')||100);
@@ -547,4 +548,35 @@ $('vv2').oninput=()=>{vFr=+$('vv2').value;localStorage.setItem('db_vfr',vFr);app
 $('vol').onclick=()=>$('volp').classList.toggle('on');
 setInterval(applyVol,1500);applyVol();
 $('stage').addEventListener('click',()=>$('volp').classList.remove('on'));
+
+// Movie stream is separate from camera/mic. No movie file is uploaded to a server.
+let movieCall=null,movieStream=null,movieURL='',movieSent=false,movieToken=0;
+function movieNotice(text,tap){$('fnb_t').textContent=text;$('fnbar').classList.toggle('on',!!text);$('fnb_b').style.display=tap?'block':'none';$('fnb_b').textContent='▶ Dekho / awaaz chalu';}
+function stopMovieCast(){movieToken++;const c=movieCall;movieCall=null;movieSent=false;if(c){try{c.close()}catch(e){}}if(movieStream){movieStream.getTracks().forEach(t=>t.stop());movieStream=null}}
+function startMovieCast(){
+ if(mode!=='file'||movieCall)return;
+ const v=$('vid');if(v.readyState<2)return;
+ if(!(conn&&conn.open)){movieNotice('Movie taiyaar. Dost ke connect hone ka wait...');return}
+ const capture=v.captureStream||v.mozCaptureStream;
+ if(!capture){movieNotice('Is browser me movie live bhejna supported nahi. Android Chrome update karo.');return}
+ try{
+ movieStream=capture.call(v);const vt=movieStream.getVideoTracks()[0];
+ if(!vt){movieStream=null;movieNotice('Movie ka video track nahi mila. Play dabao aur dobara try karo.');return}
+ try{vt.applyConstraints({width:{max:1280},height:{max:720},frameRate:{max:24}}).catch(()=>{})}catch(e){}
+ movieNotice('Dost ko movie jod rahe hain...');
+ const token=movieToken,c=peer.call(conn.peer,movieStream,{metadata:{kind:'movie',name:lastFileName}});movieCall=c;
+ c.on('error',()=>{if(token!==movieToken)return;movieCall=null;movieNotice('Movie connection nahi juda. Sync dabao; alag network par relay ki zaroorat ho sakti hai.')});
+ c.on('close',()=>{if(token!==movieToken)return;movieCall=null;movieNotice('Movie connection band hua. Sync dabao.')});
+ const pc=c.peerConnection;if(pc)pc.addEventListener('connectionstatechange',()=>{if(token!==movieToken)return;if(pc.connectionState==='connected'){movieSent=true;movieNotice('');sys('Movie ka live connection juda ✓')}else if(pc.connectionState==='failed'){movieNotice('Movie network connection fail. Same Wi-Fi try karo; relay ki zaroorat ho sakti hai.')}});
+ setTimeout(()=>{if(token===movieToken&&!movieSent&&mode==='file')movieNotice('Movie abhi nahi judi. Sync dabao. Mobile networks par relay ki zaroorat ho sakti hai.')},18000)
+ }catch(e){movieNotice('Movie live bhejne me dikkat: '+e.name+'. Dusri MP4 file try karo.')}
+}
+function receiveMovie(c){
+ stopMovieCast();movieCall=c;mode='stream';const token=movieToken,v=$('vid');try{ytp&&ytp.pauseVideo()}catch(e){}v.pause();v.removeAttribute('src');v.load();v.style.display='block';$('yt').style.display='none';$('empty').style.display='none';document.body.classList.add('has-v');curtains(true);closeP();movieNotice('Dost ki movie aa rahi hai...');c.answer();
+ c.on('stream',s=>{if(token!==movieToken)return;v.srcObject=s;v.muted=false;v.volume=vVid/100;v.play().then(()=>movieNotice('')).catch(()=>movieNotice('Movie aa gayi. Dekhne / awaaz ke liye tap karo',true));sys('Dost ki live movie: '+(c.metadata.name||'Movie'))});
+ c.on('close',()=>{if(token===movieToken)movieNotice('Dost ne movie sharing band ki.')});c.on('error',()=>{if(token===movieToken)movieNotice('Movie stream nahi judi. Dono Sync dabao.')});
+ setTimeout(()=>{if(token===movieToken&&(!v.srcObject||!v.videoWidth))movieNotice('Movie frame abhi nahi aaya. Sender Play dabaye; network/relay ki dikkat bhi ho sakti hai.')},18000)
+}
+const oldSync=$('sy').onclick;$('sy').onclick=()=>{if(mode==='file'){stopMovieCast();startMovieCast()}else if(mode==='stream'){const v=$('vid');v.play().catch(()=>movieNotice('▶ Dekhne ke liye tap karo',true));send({t:'movie-retry'})}else oldSync()};
+
 </script></body></html>
